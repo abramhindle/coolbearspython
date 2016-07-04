@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+import argparse
+
+parser = argparse.ArgumentParser(description='Cool Bears Python')
+parser.add_argument('-s', dest='syntaxerror', action='store_const', default=False, const=True, help='The last run was a syntax error!')
+parser.add_argument('args', metavar='args', nargs='+', help='arguments to python')
+args = parser.parse_args()
