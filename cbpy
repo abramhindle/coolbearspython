@@ -13,7 +13,7 @@ script_script = "script.txt"
 def sysoops(command, errmessage="Ooops"):
     code = os.system(command)
     if code != 0:
-        raise "Error: [%s], Command [%s] did not run" % (command, errmessage)
+        raise Exception("Error: [%s], Command [%s] did not run" % (command, errmessage))
 
 def make_syntaxerror():
     """ Record the last commit as a syntax error -- add a tag """
