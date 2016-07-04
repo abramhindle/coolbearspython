@@ -5,3 +5,20 @@ parser = argparse.ArgumentParser(description='Cool Bears Python')
 parser.add_argument('-s', dest='syntaxerror', action='store_const', default=False, const=True, help='The last run was a syntax error!')
 parser.add_argument('args', metavar='args', nargs='+', help='arguments to python')
 args = parser.parse_args()
+
+def make_syntaxerror():
+    """ Record the last commit as a syntax error -- add a tag """
+    return None
+
+def execute(args):
+    """ Execute python3 with some arguments. If it fails record and mark. """
+    return None
+    
+def main(args):
+    if (args.syntaxerror):
+        return make_syntaxerror()
+    else:
+        return execute(args.args)
+
+if __name__ == "__main__":
+    main(args)    
