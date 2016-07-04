@@ -1,17 +1,43 @@
 #!/usr/bin/env python3
 import argparse
+import os
+import time
 
 parser = argparse.ArgumentParser(description='Cool Bears Python')
 parser.add_argument('-s', dest='syntaxerror', action='store_const', default=False, const=True, help='The last run was a syntax error!')
 parser.add_argument('args', metavar='args', nargs='+', help='arguments to python')
 args = parser.parse_args()
 
+script_script = "script.txt"
+
+def sysoops(command, errmessage="Ooops"):
+    code = os.system(command)
+    if code != 0:
+        raise "Error: [%s], Command [%s] did not run" % (command, errmessage)
+
 def make_syntaxerror():
     """ Record the last commit as a syntax error -- add a tag """
-    return None
+    tagname = "syntaxerror-" + str(time.time()).replace(".","-")
+    sysoops("git tag -a %s" % syntaxerror, "Couldn't tag syntax error!")
+
+def success_commit():
+    sysoops("git commit -am 'Successful run'","Did not commit successfully, pleas inspect")
+
+def failure_commit():
+    sysoops("git add %s" % script_script, "Did not add %s successfully" % script_script)
+    sysoops("git commit -am 'Failure!'")
+    tagname = "failure-" + str(time.time()).replace(".","-")
+    sysoops("git tag -a %s" % tagname,"Couldn't add the tag %s" % tagname)
 
 def execute(args):
     """ Execute python3 with some arguments. If it fails record and mark. """
+    command = " ".join([str(x) for x in args])
+    command = command.replace("\"",'\\"')
+    code = os.system("script --command \"/usr/bin/env python3 %s\" %s" % (command,script_script))
+    if code == 0:
+        success_commit()
+    else:
+        failure_commit()
     return None
     
 def main(args):
