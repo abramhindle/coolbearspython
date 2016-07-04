@@ -1,0 +1,82 @@
+#!/usr/bin/env python2
+#
+#    Coolbear python is a syntax error recording wrapper for python
+#    Copyright (C) 2016 Abram Hindle
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import print_function
+
+import argparse
+import os
+import time
+
+parser = argparse.ArgumentParser(description='Cool Bears Python')
+parser.add_argument('-s', dest='syntaxerror', action='store_const', default=False, const=True, help='The last run was a syntax error!')
+parser.add_argument('args', metavar='args', nargs='*', help='arguments to python')
+args = parser.parse_args()
+
+script_script = "script.txt"
+
+def git_add():
+    for arg in args.args:
+        if os.path.isfile(arg):
+            sysoops("git add " + arg)
+    sysoops("git add " + script_script)
+
+def sysoops(command, errmessage="Ooops"):
+    code = os.system(command)
+    if code != 0:
+        raise Exception("Error: [%s], Command [%s] did not run" % (command, errmessage))
+
+def make_syntaxerror():
+    """ Record the last commit as a syntax error -- add a tag """
+    tagname = "syntaxerror-" + str(time.time()).replace(".","-")
+    sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
+
+def success_commit():
+    git_add()
+    code = os.system("git commit -am 'Successful run'")
+    if code == 1:
+        print("There was no modification!")
+    else:
+        tagname = "success-" + str(time.time()).replace(".","-")
+        sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
+
+def failure_commit():
+    git_add()
+    sysoops("git add %s" % script_script, "Did not add %s successfully" % script_script)
+    sysoops("git commit -am 'Failure!'")
+    tagname = "failure-" + str(time.time()).replace(".","-")
+    sysoops("git tag  %s" % tagname,"Couldn't add the tag %s" % tagname)
+
+def execute(args):
+    """ Execute python3 with some arguments. If it fails record and mark. """
+    command = " ".join([str(x) for x in args])
+    command = command.replace("\"",'\\"')
+    code = os.system("script -e --command \"/usr/bin/env python2 %s\" %s" % (command,script_script))
+    if code == 0:
+        success_commit()
+    else:
+        failure_commit()
+    return None
+    
+def main(args):
+    if (args.syntaxerror):
+        return make_syntaxerror()
+    else:
+        return execute(args.args)
+
+if __name__ == "__main__":
+    main(args)    
