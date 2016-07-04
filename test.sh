@@ -27,7 +27,7 @@ print("SUCCESS SUCCESS")
 EOF
 ./cbpy fun.py
 git log --date-order --tags --simplify-by-decoration --pretty=format:"%ci %d" \
-  | head -n 1 | fgrep -i success || (echo "Did not commit a success"; exit)
+  | head -n 1 | fgrep success || (echo "Did not commit a success"; exit)
 echo "Press Ctrl-C right now to inspect the test directory on your own $DIR"
 read
 rm -rf $DIR
