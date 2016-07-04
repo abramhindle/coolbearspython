@@ -27,6 +27,12 @@ args = parser.parse_args()
 
 script_script = "script.txt"
 
+def git_add():
+    for arg in args.args:
+        if os.path.isfile(arg):
+            sysoops("git add " + arg)
+    sysoops("git add " + script_script)
+
 def sysoops(command, errmessage="Ooops"):
     code = os.system(command)
     if code != 0:
@@ -38,6 +44,7 @@ def make_syntaxerror():
     sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
 
 def success_commit():
+    git_add()
     code = os.system("git commit -am 'Successful run'")
     if code == 1:
         print("There was no modification!")
@@ -46,6 +53,7 @@ def success_commit():
         sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
 
 def failure_commit():
+    git_add()
     sysoops("git add %s" % script_script, "Did not add %s successfully" % script_script)
     sysoops("git commit -am 'Failure!'")
     tagname = "failure-" + str(time.time()).replace(".","-")
