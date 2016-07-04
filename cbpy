@@ -22,7 +22,7 @@ import time
 
 parser = argparse.ArgumentParser(description='Cool Bears Python')
 parser.add_argument('-s', dest='syntaxerror', action='store_const', default=False, const=True, help='The last run was a syntax error!')
-parser.add_argument('args', metavar='args', nargs='+', help='arguments to python')
+parser.add_argument('args', metavar='args', nargs='*', help='arguments to python')
 args = parser.parse_args()
 
 script_script = "script.txt"
@@ -35,12 +35,15 @@ def sysoops(command, errmessage="Ooops"):
 def make_syntaxerror():
     """ Record the last commit as a syntax error -- add a tag """
     tagname = "syntaxerror-" + str(time.time()).replace(".","-")
-    sysoops("git tag %s" % syntaxerror, "Couldn't tag syntax error!")
+    sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
 
 def success_commit():
     code = os.system("git commit -am 'Successful run'")
     if code == 1:
         print("There was no modification!")
+    else:
+        tagname = "success-" + str(time.time()).replace(".","-")
+        sysoops("git tag %s" % tagname, "Couldn't tag syntax error!")
 
 def failure_commit():
     sysoops("git add %s" % script_script, "Did not add %s successfully" % script_script)
